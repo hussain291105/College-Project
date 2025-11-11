@@ -19,7 +19,7 @@ const SidebarLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         <div className="flex items-center justify-between p-4 border-b">
           <div className="flex items-center gap-3">
             <img
-            src="/logo.png"
+            src="/ezzylogo.png"
             alt="Ezzy Auto Parts"
             className="h-8 w-8 object-contain"
           />
