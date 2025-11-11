@@ -1,7 +1,7 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { LayoutGrid, FileText, LogOut } from "lucide-react";
-import logo from "@/assets/logo.png";
+import EzzyLogo from "@/assets/logo.png";
 
 interface SidebarProps {
   collapsed?: boolean;
@@ -9,11 +9,14 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ collapsed = false }) => {
   const navigate = useNavigate();
+  const location = useLocation(); // 👈 Detect current route
 
   const handleLogout = () => {
     sessionStorage.removeItem("auth");
     navigate("/login");
   };
+
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <aside
@@ -23,28 +26,44 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed = false }) => {
     >
 
       {/* Navigation Section */}
-      <nav className="flex-1 space-y-2 px-4 mt-4">
-        <button
-          onClick={() => navigate("/")}
-          className="flex items-center gap-3 w-full p-3 rounded-lg text-gray-700 hover:bg-blue-100 hover:text-blue-600"
-        >
-          <LayoutGrid size={18} />
-          {!collapsed && "Dashboard"}
-        </button>
+      <nav className="flex-1 space-y-2 px-3 mt-4">
+  {/* Dashboard */}
+  <button
+    onClick={() => navigate("/")}
+    className={`flex items-center gap-3 w-full p-3 rounded-lg transition-all duration-200 ${
+      isActive("/")
+        ? "bg-blue-600 text-white font-semibold shadow-sm"
+        : "text-blue-600 hover:bg-blue-100"
+    }`}
+  >
+    <LayoutGrid
+      size={18}
+      className={`${isActive("/") ? "text-white" : "text-blue-600"}`}
+    />
+    {!collapsed && "Dashboard"}
+  </button>
 
-        <button
-          onClick={() => {
-            navigate("/billing");
-            window.dispatchEvent(new Event("billing-navigation"));
-          }}
-          className="flex items-center gap-3 w-full p-3 rounded-lg text-gray-700 hover:bg-blue-100 hover:text-blue-600"
-        >
-          <FileText size={18} />
-          {!collapsed && "Billing"}
-        </button>
-      </nav>
+  {/* Billing */}
+  <button
+    onClick={() => {
+      navigate("/billing");
+      window.dispatchEvent(new Event("billing-navigation"));
+    }}
+    className={`flex items-center gap-3 w-full p-3 rounded-lg transition-all duration-200 ${
+      isActive("/billing")
+        ? "bg-blue-600 text-white font-semibold shadow-sm"
+        : "text-blue-600 hover:bg-blue-100"
+    }`}
+  >
+    <FileText
+      size={18}
+      className={`${isActive("/billing") ? "text-white" : "text-blue-600"}`}
+    />
+    {!collapsed && "Billing"}
+  </button>
+</nav>
 
-      {/* Logout Button */}
+      {/* Logout */}
       <div className="p-4 border-t">
         <button
           onClick={handleLogout}
