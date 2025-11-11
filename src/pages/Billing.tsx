@@ -263,6 +263,7 @@ const Billing = () => {
       printFrame.contentWindow?.focus();
       printFrame.contentWindow?.print();
       document.body.removeChild(printFrame);
+      toast.dismiss(toastId); // ✅ Close the loading toast after print
     }, 600);
   } catch (err) {
     console.error("Print error:", err);
