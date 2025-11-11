@@ -19,12 +19,10 @@ const SidebarLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         <div className="flex items-center justify-between p-4 border-b">
           <div className="flex items-center gap-3">
             <img
-              src="/logo.png"
-              alt="Ezzy Auto Parts"
-              className={`object-contain transition-all duration-300 ${
-                sidebarOpen ? "h-8 w-8" : "h-8 w-8 mx-auto"
-              }`}
-            />
+            src="/logo.png"
+            alt="Ezzy Auto Parts"
+            className="h-8 w-8 object-contain"
+          />
             {sidebarOpen && (
               <h1 className="text-lg font-semibold text-gray-900 whitespace-nowrap">
                 Ezzy Auto Parts

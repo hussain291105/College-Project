@@ -24,6 +24,7 @@ const Index = () => {
           src={logo}
           alt="Ezzy Auto Parts Logo"
           className="h-80 w-auto mb-6 object-contain transition-transform duration-300 hover:scale-105"
+          loading="lazy"
         />
 
         <h1 className="text-4xl md:text-5xl font-bold text-center">
