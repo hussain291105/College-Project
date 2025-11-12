@@ -25,7 +25,7 @@ const SidebarLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           />
             {sidebarOpen && (
               <h1 className="text-lg font-semibold text-gray-900 whitespace-nowrap">
-                Ezzy Auto Parts
+                Fresh Soft Tissue
               </h1>
             )}
           </div>

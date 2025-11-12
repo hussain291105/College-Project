@@ -2,9 +2,8 @@ import React, { forwardRef } from "react";
 
 interface BillItem {
   id: string;
-  part_number: string;
-  part_name: string;
-  selling_price: number;
+  gsm_number: string;
+  price: number;
   quantity: number;
   total: number;
 }
@@ -22,25 +21,25 @@ const InvoicePrint = forwardRef<HTMLDivElement, InvoicePrintProps>(
   ({ billNumber, billDate, customerName, billItems, subtotal, grandTotal }, ref) => {
     return (
       <div ref={ref} className="p-8 text-black text-sm font-sans print:bg-white">
+        {/* Header */}
         <div className="text-center mb-4">
           <h1 className="font-bold text-xl uppercase">
-            Al-Shamali Intl. Co. Auto Parts Center
+            Fresh Soft Enterprises
           </h1>
-          <p className="text-sm font-semibold">EZZY STORE</p>
           <p className="text-xs">All Kind of Engine & Suspension Items</p>
           <h2 className="border border-black inline-block px-3 mt-2 text-xs font-semibold">
-            CREDIT INVOICE
+            CASH INVOICE
           </h2>
         </div>
 
-        {/* Invoice details */}
+        {/* Invoice Details */}
         <div className="grid grid-cols-2 text-xs mb-2">
           <div>
             <p>
               <span className="font-semibold">Invoice #:</span> {billNumber}
             </p>
             <p>
-              <span className="font-semibold">Measurer:</span> {customerName || "N/A"}
+              <span className="font-semibold">Customer:</span> {customerName || "N/A"}
             </p>
           </div>
           <div className="text-right">
@@ -48,32 +47,36 @@ const InvoicePrint = forwardRef<HTMLDivElement, InvoicePrintProps>(
               <span className="font-semibold">Branch:</span> HEAD OFFICE
             </p>
             <p>
-              <span className="font-semibold">Dated:</span> {billDate}
+              <span className="font-semibold">Date:</span> {billDate}
             </p>
           </div>
         </div>
 
-        {/* Table */}
+        {/* Items Table */}
         <table className="w-full border border-black border-collapse text-xs mb-2">
           <thead>
             <tr className="border-b border-black text-left">
-              <th className="border-r border-black px-2 py-1 w-8">S.No</th>
-              <th className="border-r border-black px-2 py-1">Part No</th>
-              <th className="border-r border-black px-2 py-1">Description</th>
-              <th className="border-r border-black px-2 py-1 w-20">Qty</th>
-              <th className="border-r border-black px-2 py-1 w-24">U-Price</th>
-              <th className="px-2 py-1 w-24">Amount</th>
+              <th className="border-r border-black px-2 py-1 w-8 text-center">S.No</th>
+              <th className="border-r border-black px-2 py-1">GSM Number</th>
+              <th className="border-r border-black px-2 py-1 w-20 text-center">Qty</th>
+              <th className="border-r border-black px-2 py-1 w-24 text-right">Unit Price</th>
+              <th className="px-2 py-1 w-24 text-right">Amount</th>
             </tr>
           </thead>
           <tbody>
             {billItems.map((item, index) => (
               <tr key={item.id} className="border-b border-black">
-                <td className="border-r border-black px-2 py-1 text-center">{index + 1}</td>
-                <td className="border-r border-black px-2 py-1">{item.part_number}</td>
-                <td className="border-r border-black px-2 py-1">{item.part_name}</td>
-                <td className="border-r border-black px-2 py-1 text-center">{item.quantity}</td>
+                <td className="border-r border-black px-2 py-1 text-center">
+                  {index + 1}
+                </td>
+                <td className="border-r border-black px-2 py-1">
+                  {item.gsm_number}
+                </td>
+                <td className="border-r border-black px-2 py-1 text-center">
+                  {item.quantity}
+                </td>
                 <td className="border-r border-black px-2 py-1 text-right">
-                  {item.selling_price.toFixed(3)}
+                  {item.price.toFixed(3)}
                 </td>
                 <td className="px-2 py-1 text-right">{item.total.toFixed(3)}</td>
               </tr>

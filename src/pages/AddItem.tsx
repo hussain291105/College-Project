@@ -8,9 +8,8 @@ import { X, Save } from "lucide-react";
 
 interface SparePart {
   id: string;
-  part_number: string;
-  part_name: string;
-  selling_price: number;
+  gsm_number: string;
+  price: number;
   stock_quantity: number;
   unit: string;
 }
@@ -32,9 +31,11 @@ const AddItem = () => {
   const fetchParts = async () => {
     const { data, error } = await supabase
       .from("spare_parts")
-      .select("id, part_number, part_name, selling_price, stock_quantity, unit");
-    if (error) toast.error("Error loading parts");
-    else setParts(data || []);
+      .select("id, gsm_number, price, stock_quantity, unit");
+    if (error) {
+      console.error(error);
+      toast.error("Error loading parts");
+    } else setParts(data || []);
   };
 
   const handleSave = () => {
@@ -53,7 +54,7 @@ const AddItem = () => {
 
     const newItem = {
       ...selectedPart,
-      selling_price: Number(customPrice),
+      price: Number(customPrice),
       quantity,
       total: Number(customPrice) * quantity,
     };
@@ -70,7 +71,7 @@ const AddItem = () => {
   return (
     <div className="p-6 max-w-3xl mx-auto space-y-6">
       <div className="flex justify-between items-center border-b pb-3">
-        <h1 className="text-2xl font-bold">➕ Add New Item</h1>
+        <h1 className="text-2xl font-bold"> Add New Item</h1>
         <Button
           variant="destructive"
           onClick={() => navigate("/billing")}
@@ -83,7 +84,7 @@ const AddItem = () => {
       {/* Search + Dropdown */}
       <div className="relative">
         <Input
-          placeholder="Search by part number or name..."
+          placeholder="Search by GSM Number..."
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
@@ -95,10 +96,8 @@ const AddItem = () => {
         {search.length > 0 && (
           <div className="absolute z-50 bg-white border rounded-md shadow-md mt-1 w-full max-h-56 overflow-auto">
             {parts
-              .filter(
-                (p) =>
-                  p.part_number.toLowerCase().includes(search.toLowerCase()) ||
-                  p.part_name.toLowerCase().includes(search.toLowerCase())
+              .filter((p) =>
+                p.gsm_number.toLowerCase().includes(search.toLowerCase())
               )
               .slice(0, 10)
               .map((p) => (
@@ -106,12 +105,11 @@ const AddItem = () => {
                   key={p.id}
                   onClick={() => {
                     setSelectedPart(p);
-                    setSearch(`${p.part_number} — ${p.part_name}`);
+                    setSearch(p.gsm_number);
                   }}
                   className="p-2 hover:bg-gray-100 cursor-pointer"
                 >
-                  <div className="font-medium">{p.part_number}</div>
-                  <div className="text-sm text-gray-600">{p.part_name}</div>
+                  <div className="font-medium">{p.gsm_number}</div>
                   <div className="text-xs text-gray-400">
                     Stock: {p.stock_quantity} {p.unit}
                   </div>
@@ -124,12 +122,9 @@ const AddItem = () => {
       {/* Selected Part Details */}
       {selectedPart && (
         <div className="p-4 border rounded-md bg-card shadow-sm">
-          <p className="font-semibold text-lg">{selectedPart.part_name}</p>
-          <p className="text-sm text-gray-600 mb-3">
-            Part No: {selectedPart.part_number}
-          </p>
+          <p className="font-semibold text-lg">{selectedPart.gsm_number}</p>
 
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-4 mt-3">
             <Input
               type="number"
               placeholder="Selling Price"

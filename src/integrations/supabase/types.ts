@@ -7,8 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "13.0.5"
   }
@@ -16,51 +14,45 @@ export type Database = {
     Tables: {
       spare_parts: {
         Row: {
-          category: string
-          cost_price: number | null
-          created_at: string
-          description: string | null
           id: string
-          location: string | null
+          gsm_number: string
+          category: string
           manufacturer: string | null
-          minimum_stock: number | null
-          part_name: string
-          part_number: string
           price: number
+          cost_price: number | null
           stock_quantity: number
+          minimum_stock: number | null
           unit: string | null
+          location: string | null
+          created_at: string
           updated_at: string
         }
         Insert: {
-          category: string
-          cost_price?: number | null
-          created_at?: string
-          description?: string | null
           id?: string
-          location?: string | null
+          gsm_number: string
+          category: string
           manufacturer?: string | null
-          minimum_stock?: number | null
-          part_name: string
-          part_number: string
           price: number
+          cost_price?: number | null
           stock_quantity?: number
+          minimum_stock?: number | null
           unit?: string | null
+          location?: string | null
+          created_at?: string
           updated_at?: string
         }
         Update: {
-          category?: string
-          cost_price?: number | null
-          created_at?: string
-          description?: string | null
           id?: string
-          location?: string | null
+          gsm_number?: string
+          category?: string
           manufacturer?: string | null
-          minimum_stock?: number | null
-          part_name?: string
-          part_number?: string
           price?: number
+          cost_price?: number | null
           stock_quantity?: number
+          minimum_stock?: number | null
           unit?: string | null
+          location?: string | null
+          created_at?: string
           updated_at?: string
         }
         Relationships: []

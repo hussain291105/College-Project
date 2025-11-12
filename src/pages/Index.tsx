@@ -28,7 +28,7 @@ const Index = () => {
         />
 
         <h1 className="text-4xl md:text-5xl font-bold text-center">
-          Welcome to Ezzy Auto Parts
+          Welcome to Fresh Soft Tissue Enterprises
         </h1>
 
         <p className="text-lg md:text-xl text-gray-600 mt-3 text-center max-w-xl">

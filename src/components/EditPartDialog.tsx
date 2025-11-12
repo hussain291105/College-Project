@@ -1,23 +1,26 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 interface SparePart {
   id: string;
-  part_number: string;
-  part_name: string;
+  gsm_number: string;
   category: string;
   manufacturer: string | null;
-  description: string | null;
-  selling_price: number; // ✅ renamed from price
+  price: number;
   cost_price: number | null;
   stock_quantity: number;
-  min_stock: number; // ✅ renamed from minimum_stock
+  minimum_stock: number;
   unit: string;
   location: string | null;
 }
@@ -29,18 +32,21 @@ interface EditPartDialogProps {
   onPartUpdated: () => void;
 }
 
-const EditPartDialog = ({ part, open, onOpenChange, onPartUpdated }: EditPartDialogProps) => {
+const EditPartDialog = ({
+  part,
+  open,
+  onOpenChange,
+  onPartUpdated,
+}: EditPartDialogProps) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    part_number: part.part_number,
-    part_name: part.part_name,
+    gsm_number: part.gsm_number,
     category: part.category,
     manufacturer: part.manufacturer || "",
-    description: part.description || "",
-    selling_price: part.selling_price.toString(), // ✅ updated
+    price: part.price.toString(),
     cost_price: part.cost_price?.toString() || "",
     stock_quantity: part.stock_quantity.toString(),
-    min_stock: part.min_stock.toString(), // ✅ updated
+    minimum_stock: part.minimum_stock.toString(),
     unit: part.unit,
     location: part.location || "",
   });
@@ -53,15 +59,15 @@ const EditPartDialog = ({ part, open, onOpenChange, onPartUpdated }: EditPartDia
       const { error } = await supabase
         .from("spare_parts")
         .update({
-          part_number: formData.part_number,
-          part_name: formData.part_name,
-          category: formData.category,
+          gsm_number: formData.gsm_number.trim(),
+          category: formData.category.trim(),
           manufacturer: formData.manufacturer || null,
-          description: formData.description || null,
-          selling_price: parseFloat(formData.selling_price), // ✅ renamed
-          cost_price: formData.cost_price ? parseFloat(formData.cost_price) : null,
+          price: parseFloat(formData.price),
+          cost_price: formData.cost_price
+            ? parseFloat(formData.cost_price)
+            : null,
           stock_quantity: parseInt(formData.stock_quantity),
-          min_stock: parseInt(formData.min_stock), // ✅ renamed
+          minimum_stock: parseInt(formData.minimum_stock),
           unit: formData.unit,
           location: formData.location || null,
         })
@@ -69,7 +75,7 @@ const EditPartDialog = ({ part, open, onOpenChange, onPartUpdated }: EditPartDia
 
       if (error) throw error;
 
-      toast.success("Spare part updated successfully!");
+      toast.success("✅ Spare part updated successfully!");
       onOpenChange(false);
       onPartUpdated();
     } catch (error: any) {
@@ -83,73 +89,64 @@ const EditPartDialog = ({ part, open, onOpenChange, onPartUpdated }: EditPartDia
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit Spare Part</DialogTitle>
+          <DialogTitle>Edit Stock</DialogTitle>
           <DialogDescription>
-            Update the details of the spare part.
+            Update the details of New Stock.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="edit_part_number">Part Number *</Label>
-              <Input
-                id="edit_part_number"
-                required
-                value={formData.part_number}
-                onChange={(e) => setFormData({ ...formData, part_number: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="edit_part_name">Part Name *</Label>
-              <Input
-                id="edit_part_name"
-                required
-                value={formData.part_name}
-                onChange={(e) => setFormData({ ...formData, part_name: e.target.value })}
-              />
-            </div>
-          </div>
 
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* GSM Number + Category */}
           <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit_gsm_number">GSM Number *</Label>
+              <Input
+                id="edit_gsm_number"
+                required
+                value={formData.gsm_number}
+                onChange={(e) =>
+                  setFormData({ ...formData, gsm_number: e.target.value })
+                }
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="edit_category">Category *</Label>
               <Input
                 id="edit_category"
                 required
                 value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="edit_manufacturer">Manufacturer</Label>
-              <Input
-                id="edit_manufacturer"
-                value={formData.manufacturer}
-                onChange={(e) => setFormData({ ...formData, manufacturer: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, category: e.target.value })
+                }
               />
             </div>
           </div>
 
+          {/* Manufacturer */}
           <div className="space-y-2">
-            <Label htmlFor="edit_description">Description</Label>
-            <Textarea
-              id="edit_description"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              rows={3}
+            <Label htmlFor="edit_manufacturer">Manufacturer</Label>
+            <Input
+              id="edit_manufacturer"
+              value={formData.manufacturer}
+              onChange={(e) =>
+                setFormData({ ...formData, manufacturer: e.target.value })
+              }
             />
           </div>
 
+          {/* Pricing */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="edit_selling_price">Selling Price *</Label>
+              <Label htmlFor="edit_price">Selling Price *</Label>
               <Input
-                id="edit_selling_price"
+                id="edit_price"
                 type="number"
                 step="0.01"
                 required
-                value={formData.selling_price}
-                onChange={(e) => setFormData({ ...formData, selling_price: e.target.value })}
+                value={formData.price}
+                onChange={(e) =>
+                  setFormData({ ...formData, price: e.target.value })
+                }
               />
             </div>
             <div className="space-y-2">
@@ -159,11 +156,14 @@ const EditPartDialog = ({ part, open, onOpenChange, onPartUpdated }: EditPartDia
                 type="number"
                 step="0.01"
                 value={formData.cost_price}
-                onChange={(e) => setFormData({ ...formData, cost_price: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, cost_price: e.target.value })
+                }
               />
             </div>
           </div>
 
+          {/* Stock */}
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="edit_stock_quantity">Stock Quantity *</Label>
@@ -172,16 +172,20 @@ const EditPartDialog = ({ part, open, onOpenChange, onPartUpdated }: EditPartDia
                 type="number"
                 required
                 value={formData.stock_quantity}
-                onChange={(e) => setFormData({ ...formData, stock_quantity: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, stock_quantity: e.target.value })
+                }
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit_min_stock">Min. Stock</Label>
+              <Label htmlFor="edit_minimum_stock">Min. Stock</Label>
               <Input
-                id="edit_min_stock"
+                id="edit_minimum_stock"
                 type="number"
-                value={formData.min_stock}
-                onChange={(e) => setFormData({ ...formData, min_stock: e.target.value })}
+                value={formData.minimum_stock}
+                onChange={(e) =>
+                  setFormData({ ...formData, minimum_stock: e.target.value })
+                }
               />
             </div>
             <div className="space-y-2">
@@ -189,26 +193,37 @@ const EditPartDialog = ({ part, open, onOpenChange, onPartUpdated }: EditPartDia
               <Input
                 id="edit_unit"
                 value={formData.unit}
-                onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, unit: e.target.value })
+                }
               />
             </div>
           </div>
 
+          {/* Location */}
           <div className="space-y-2">
             <Label htmlFor="edit_location">Storage Location</Label>
             <Input
               id="edit_location"
               value={formData.location}
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, location: e.target.value })
+              }
+              placeholder="e.g., Warehouse A, Shelf 3"
             />
           </div>
 
+          {/* Buttons */}
           <div className="flex justify-end gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? "Updating..." : "Update Part"}
+              {loading ? "Updating..." : "Update Stock"}
             </Button>
           </div>
         </form>

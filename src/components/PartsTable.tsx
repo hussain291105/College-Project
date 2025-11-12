@@ -16,15 +16,13 @@ import EditPartDialog from "./EditPartDialog";
 
 interface SparePart {
   id: string;
-  part_number: string;
-  part_name: string;
+  gsm_number: string;
   category: string;
   manufacturer: string | null;
-  description: string | null;
-  selling_price: number;
-  cost_price: number | null; // ✅ existing field
+  price: number;
+  cost_price: number | null;
   stock_quantity: number;
-  min_stock: number;
+  minimum_stock: number;
   unit: string;
   location: string | null;
 }
@@ -40,9 +38,9 @@ const PartsTable = ({ parts, onUpdate }: PartsTableProps) => {
 
   const filteredParts = parts.filter(
     (part) =>
-      part.part_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      part.part_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      part.category.toLowerCase().includes(searchTerm.toLowerCase())
+      part.gsm_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      part.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (part.manufacturer?.toLowerCase() || "").includes(searchTerm.toLowerCase())
   );
 
   const handleDelete = async (id: string) => {
@@ -64,7 +62,7 @@ const PartsTable = ({ parts, onUpdate }: PartsTableProps) => {
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Search by name, part number, or category..."
+          placeholder="Search by GSM number, category, or manufacturer..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="pl-10"
@@ -76,12 +74,11 @@ const PartsTable = ({ parts, onUpdate }: PartsTableProps) => {
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50 hover:bg-muted/50">
-              <TableHead>Part Number</TableHead>
-              <TableHead>Part Name</TableHead>
+              <TableHead>GSM Number</TableHead>
               <TableHead>Category</TableHead>
               <TableHead>Manufacturer</TableHead>
               <TableHead>Stock</TableHead>
-              <TableHead>Cost Price</TableHead> {/* ✅ Added Column */}
+              <TableHead>Cost Price</TableHead>
               <TableHead>Selling Price</TableHead>
               <TableHead>Location</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -92,7 +89,7 @@ const PartsTable = ({ parts, onUpdate }: PartsTableProps) => {
             {filteredParts.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={9}
+                  colSpan={8}
                   className="text-center py-8 text-muted-foreground"
                 >
                   No parts found
@@ -104,24 +101,28 @@ const PartsTable = ({ parts, onUpdate }: PartsTableProps) => {
                   key={part.id}
                   className="hover:bg-muted/30 transition-colors"
                 >
+                  {/* GSM Number */}
                   <TableCell className="font-mono font-medium">
-                    {part.part_number}
+                    {part.gsm_number}
                   </TableCell>
-                  <TableCell className="font-medium">{part.part_name}</TableCell>
+
+                  {/* Category */}
                   <TableCell>
                     <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
                       {part.category}
                     </span>
                   </TableCell>
+
+                  {/* Manufacturer */}
                   <TableCell className="text-muted-foreground">
                     {part.manufacturer || "-"}
                   </TableCell>
 
-                  {/* 🧮 Stock Column */}
+                  {/* Stock Column */}
                   <TableCell>
                     <span
                       className={`font-medium ${
-                        part.stock_quantity <= part.min_stock
+                        part.stock_quantity <= part.minimum_stock
                           ? "text-destructive"
                           : "text-foreground"
                       }`}
@@ -130,21 +131,22 @@ const PartsTable = ({ parts, onUpdate }: PartsTableProps) => {
                     </span>
                   </TableCell>
 
-                  {/* 💰 Cost Price Column */}
+                  {/* Cost Price */}
                   <TableCell className="font-semibold text-center">
                     ₹{(part.cost_price || 0).toFixed(2)}
                   </TableCell>
 
-                  {/* 💵 Selling Price Column */}
+                  {/* Selling Price */}
                   <TableCell className="font-semibold text-center">
-                    ₹{part.selling_price.toFixed(2)}
+                    ₹{part.price.toFixed(2)}
                   </TableCell>
 
+                  {/* Location */}
                   <TableCell className="text-muted-foreground">
                     {part.location || "-"}
                   </TableCell>
 
-                  {/* ✏️ 🗑️ Actions */}
+                  {/* Actions */}
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Button

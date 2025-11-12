@@ -3,11 +3,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "sonner"; // ✅ Fix import for Sonner toast
+import { Toaster as Sonner } from "sonner"; // ✅ For Sonner toast notifications
 
 // Pages
 import Index from "@/pages/Index";
-import Billing from "@/pages/Billing";
+import BillingList from "@/pages/BillingList";   // ✅ Page for saved bills
+import BillingForm from "@/pages/BillingForm";   // ✅ Page for adding new bills
+import BillingView from "@/pages/BillingView";   // ✅ Page for viewing bill details
 import NotFound from "@/pages/NotFound";
 import Login from "@/pages/Login";
 import InvoiceForm from "@/pages/InvoiceForm";
@@ -23,7 +25,7 @@ const App = () => (
     <TooltipProvider>
       {/* ✅ Global Toasts */}
       <Toaster />
-      <Sonner position="top-right" richColors closeButton /> 
+      <Sonner position="top-right" richColors closeButton />
 
       <BrowserRouter>
         <Routes>
@@ -42,17 +44,43 @@ const App = () => (
             }
           />
 
+          {/* ✅ Billing List Page */}
           <Route
             path="/billing"
             element={
               <ProtectedRoute>
                 <SidebarLayout>
-                  <Billing />
+                  <BillingList />
                 </SidebarLayout>
               </ProtectedRoute>
             }
           />
 
+          {/* ✅ New Bill Form Page */}
+          <Route
+            path="/billing/new"
+            element={
+              <ProtectedRoute>
+                <SidebarLayout>
+                  <BillingForm />
+                </SidebarLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ✅ Bill Details / Show Bill Page */}
+          <Route
+            path="/billing/:id"
+            element={
+              <ProtectedRoute>
+                <SidebarLayout>
+                  <BillingView />
+                </SidebarLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Existing Invoice Form */}
           <Route
             path="/invoice"
             element={
