@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -32,6 +32,8 @@ const AddPartDialog = ({ onPartAdded }: AddPartDialogProps) => {
     unit: "piece",
     location: "",
   });
+  const [kg, setKg] = useState("");
+  const [amount, setAmount] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,6 +79,25 @@ const AddPartDialog = ({ onPartAdded }: AddPartDialogProps) => {
     }
   };
 
+  useEffect(() => {
+    const weight = parseFloat(kg);
+    const totalAmount = parseFloat(amount);
+
+    if (!weight || !totalAmount) {
+      setFormData((prev) => ({ ...prev, cost_price: "" }));
+      return;
+    }
+
+    const totalGrams = weight * 1000;
+    const pricePerGram = totalAmount / totalGrams;
+    const costFor100g = pricePerGram * 100;
+
+    setFormData((prev) => ({
+      ...prev,
+      cost_price: costFor100g.toFixed(2),
+    }));
+  }, [kg, amount]);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -121,6 +142,14 @@ const AddPartDialog = ({ onPartAdded }: AddPartDialogProps) => {
               />
             </div>
           </div>
+
+          {/* NEW: Description */}
+          <div className="space-y-2">
+            <label htmlFor="description">Description</label>
+            <textarea
+              className="border rounded-md p-2 w-full h-12 resize-none"
+            />
+          </div> 
 
           {/* Manufacturer */}
           <div className="space-y-2">
@@ -200,18 +229,28 @@ const AddPartDialog = ({ onPartAdded }: AddPartDialogProps) => {
             </div>
           </div>
 
-          {/* Location */}
-          <div className="space-y-2">
-            <Label htmlFor="location">Storage Location</Label>
-            <Input
-              id="location"
-              value={formData.location}
-              onChange={(e) =>
-                setFormData({ ...formData, location: e.target.value })
-              }
-              placeholder="Please enter a storage location"
-            />
-          </div>
+          {/* Kg + Amount */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label htmlFor="kg">Kg</label>
+              <input
+                type="number"
+                value={kg}
+                onChange={(e) => setKg(e.target.value)}
+                className="border rounded-md p-2 w-full"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="amount">Amount</label>
+              <input
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="border rounded-md p-2 w-full"
+              />
+            </div>
+          </div>            
 
           {/* Buttons */}
           <div className="flex justify-end gap-3 pt-4">
