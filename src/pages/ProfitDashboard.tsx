@@ -172,7 +172,7 @@ const ProfitDashboard: React.FC = () => {
     }));
   }, [filteredLedger, expenses]);
 
-  const totalProfit = monthlyData.reduce((s, m) => s + m.profit, 0);
+  const totalProfit = monthlyData.reduce((s, m) => s + m.profit / 2 , 0);
   const totalExpense = monthlyData.reduce((s, m) => s + m.expense, 0);
   const netTotal = totalProfit - totalExpense;
   const totalSales = filteredLedger.reduce((s, r) => s + r.price, 0);
