@@ -7,6 +7,7 @@ export interface Expense {
   item: string;
   qty: number;
   amount: number;
+  created_at?: string;
 }
 
 const API_URL = "http://localhost:5000/api/expenses";
@@ -106,6 +107,7 @@ export default function ExpenseReport() {
         <table className="w-full">
           <thead className="bg-gray-100">
             <tr>
+              <th className="p-4 text-left font-normal text-gray-600">Date</th>
               <th className="p-4 text-left font-normal text-gray-600">Item</th>
               <th className="p-4 text-center font-normal text-gray-600">Qty</th>
               <th className="p-4 text-center font-normal text-gray-600">Amount</th>
@@ -139,6 +141,7 @@ export default function ExpenseReport() {
                   </>
                 ) : (
                   <>
+                    <td className="p-4">{exp.created_at ? new Date(exp.created_at).toLocaleDateString() : "-"}</td>
                     <td className="p-4">{exp.item}</td>
                     <td className="p-4 text-center">{exp.qty}</td>
                     <td className="p-4 text-center">₹{Number(exp.amount).toFixed(2)}</td>
