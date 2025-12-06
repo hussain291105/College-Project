@@ -59,7 +59,7 @@ const Dashboard = () => {
   const lowStockCount = lowStockParts.length;
 
   return (
-    <div className="">
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Stock Inventory</h1>
