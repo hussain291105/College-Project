@@ -37,8 +37,8 @@ export function printBillInvoice(data: any) {
 
         <style>
           body {
-            font-family: 'Georgia', serif;
-            background: #fcf8f6;
+            font-family: 'Arial', sans-serif;
+            background: #ffffff;
             margin: 0;
             padding: 0;
           }
@@ -49,6 +49,7 @@ export function printBillInvoice(data: any) {
             padding: 40px 50px;
             background: white;
             box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            text-align: center;
 
             /* Footer fix */
             min-height: 1000px;
@@ -60,29 +61,33 @@ export function printBillInvoice(data: any) {
           .header-title {
             font-size: 46px;
             font-weight: bold;
-            color: #d65c28;
+            color: #0F4C3A;
             margin-bottom: 6px;
+            text-align: center;
           }
 
           .invoice-number {
             font-size: 14px;
-            color: #d65c28;
+            color: #1D6B4F;
             margin-top: -4px;
           }
 
           .flex {
             display: flex;
             justify-content: space-between;
+            align-items: center;
           }
 
           .right-contact {
             text-align: right;
             font-size: 14px;
+            text-align: right;
           }
 
           .right-contact-title {
-            color: #d65c28;
+            color: #0F4C3A;
             font-weight: bold;
+            font-size: 16px; 
           }
 
           table {
@@ -92,8 +97,8 @@ export function printBillInvoice(data: any) {
           }
 
           th {
-            color: #d65c28;
-            font-size: 13px;
+            color: #0F4C3A;
+            font-size: 16px;
             padding-bottom: 8px;
             border-bottom: 1px solid #eee;
             text-align: left;
@@ -101,7 +106,8 @@ export function printBillInvoice(data: any) {
           }
 
           td {
-            font-size: 14px;
+            font-size: 15px;
+            font: normal 15px/24px Arial, sans-serif;
           }
 
           .summary {
@@ -115,11 +121,11 @@ export function printBillInvoice(data: any) {
           }
 
           .summary .grand-total {
-            font-size: 18px;
+            font-size: 25px;
             font-weight: bold;
             border-top: 2px solid #aaa;
             padding-top: 8px;
-            color: #d65c28;
+            color: #0F4C3A;
           }
 
           .date-issued {
@@ -128,7 +134,7 @@ export function printBillInvoice(data: any) {
           }
 
           .bottom-line {
-            border-top: 4px solid #d65c28;
+            border-top: 4px solid #A8C6A0;
             margin: 40px 0 30px 0;
           }
 
@@ -142,10 +148,20 @@ export function printBillInvoice(data: any) {
           }
 
           .footer-logo-name {
-            color: #d65c28;
-            font-size: 16px;
+            color: #0F4C3A;
+            font-size: 30px;
             font-weight: bold;
             letter-spacing: 1px;
+          }
+
+          .paid-stamp {
+            text-align: center;
+            margin: 40px 0 20px 0;
+          }
+
+          .paid-stamp img {
+            width: 180px;
+            opacity: 0.85;
           }
         </style>
 
@@ -160,14 +176,15 @@ export function printBillInvoice(data: any) {
                 <div class="header-title">INVOICE</div>
                 <div class="invoice-number">INVOICE#: ${data.billNumber}</div>
               </div>
+            </div>
 
               <div class="right-contact">
                 <div class="right-contact-title">CUSTOMER CONTACT</div>
                 ${data.customerName}<br/>
-                ${data.billDate}<br/>
+                ${new Date(data.billDate).toLocaleDateString("en-GB").replace(/\//g, "-")}<br/>
                 ${data.paymentMode}
               </div>
-            </div>
+            
 
             <table>
               <thead>
@@ -180,7 +197,12 @@ export function printBillInvoice(data: any) {
               </thead>
               <tbody>${itemsRows}</tbody>
             </table>
+          </div>
+            
 
+          <!-- FIXED BOTTOM FOOTER -->
+          <div style="margin-top:auto;">
+            <hr style="border: 1px solid #A8C6A0; margin: 20px 0;">
             <table class="summary">
               <tr>
                 <td>Subtotal:</td>
@@ -195,10 +217,7 @@ export function printBillInvoice(data: any) {
                 <td class="grand-total" style="text-align:right;">₹${(data.subtotal * 1.18).toFixed(2)}</td>
               </tr>
             </table>
-          </div>
 
-          <!-- FIXED BOTTOM FOOTER -->
-          <div style="margin-top:auto;">
             <div class="bottom-line"></div>
 
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
@@ -211,8 +230,28 @@ export function printBillInvoice(data: any) {
                 www.fsenterprise.com
               </div>
 
-              <div class="footer-logo">
-                <div class="footer-logo-name">BRAND KIT</div>
+              <div style="position: relative; width: 220px; margin-left: auto;">
+                <div class="paid-stamp">
+                  <img 
+                    src="/paid-stamp copy.png" 
+                    alt="Paid Stamp"
+                    style="width: 220px; position: relative; z-index: 1;"
+                  />
+
+                  <img
+                    src="/mustafa-sign.png" 
+                    alt="Signature"
+                    style="
+                      position: absolute;
+                      bottom: -10px;
+                      right: -60px;
+                      width: 180px;
+                      z-index: 2;
+                      transform: rotate(-8deg);
+                    "
+                  />
+                <div class="footer-logo-name">Fs Enterprise</div>
+                </div>
               </div>
             </div>
           </div>
