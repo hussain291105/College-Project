@@ -395,6 +395,7 @@ const BillingEdit = () => {
                 total: Number(it.total),
               })),
               subtotal: Number(subtotal),
+              status, 
             })
           }
         >

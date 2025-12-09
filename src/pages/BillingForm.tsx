@@ -352,7 +352,8 @@ export default function BillingForm() {
                 billDate,
                 paymentMode,
                 items: billItems,
-                subtotal
+                subtotal,
+                status,
               })
             }
             className="bg-blue-600 hover:bg-blue-700"

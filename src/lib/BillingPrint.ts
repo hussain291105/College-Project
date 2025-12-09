@@ -17,6 +17,24 @@ export function printBillInvoice(data: any) {
   const win = window.open("", "_blank");
   if (!win) return;
 
+  //======== WATERMARK & PAID STAMP LOGIC ========
+  let showWatermark = false;
+  let showPaidStamp = false;
+
+  const cleanStatus = (data.status || "").toLowerCase();
+
+  if (cleanStatus === "paid") {
+    showPaidStamp = true;
+    showWatermark = false;
+  } else if (
+    cleanStatus === "unpaid" ||
+    cleanStatus === "pending" ||
+    cleanStatus === "new invoice"
+  ) {
+    showWatermark = true;
+    showPaidStamp = false;
+  }
+
   const itemsRows = data.items
     .map(
       (item: any) => `
@@ -230,8 +248,32 @@ export function printBillInvoice(data: any) {
                 www.fsenterprise.com
               </div>
 
-              <div style="position: relative; width: 220px; margin-left: auto;">
-                <div class="paid-stamp">
+              ${showWatermark ? `
+                <div style="
+                  position: fixed;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50%, -50%) rotate(-30deg);
+                  opacity: 0.08;
+                  font-size: 110px;
+                  font-weight: bold;
+                  color: #FF0000;
+                  pointer-events: none;
+                  z-index: 0;
+                ">
+                  Fs Enterprise
+                </div>
+              ` : ''}
+
+              ${showPaidStamp ? `
+              <div style="
+                width: 100%;
+                margin-top: 40px;
+                display: flex;
+                justify-content: right;
+                align-items: center;
+              ">
+                <div style="position: relative; width: 240px;">
                   <img 
                     src="/paid-stamp copy.png" 
                     alt="Paid Stamp"
@@ -250,7 +292,19 @@ export function printBillInvoice(data: any) {
                       transform: rotate(-8deg);
                     "
                   />
-                <div class="footer-logo-name">Fs Enterprise</div>
+
+                  <div style="
+                    color: #0F4C3A;
+                    font-size: 30px;
+                    font-weight: bold;
+                    text-align: center;
+                    margin-top: 10px;
+                  ">
+                    Fs Enterprise
+                  </div>
+                </div>
+              </div>
+              ` : ''}
                 </div>
               </div>
             </div>
