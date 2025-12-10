@@ -1,6 +1,7 @@
 export interface PrintBillData {
   billNumber?: string;
   customerName: string;
+  phoneNumber?:string
   billDate?: string;
   paymentMode?: string;
   items: {
@@ -217,7 +218,7 @@ export function printBillInvoice(data: any) {
                 <div class="right-contact-title">CUSTOMER CONTACT</div>
                 ${data.customerName}<br/>
                 ${new Date(data.billDate).toLocaleDateString("en-GB").replace(/\//g, "-")}<br/>
-                ${data.paymentMode}
+                ${data.phoneNumber}
               </div>
 
               ${

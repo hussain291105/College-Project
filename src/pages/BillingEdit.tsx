@@ -6,6 +6,7 @@ import { Plus, Save, X, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { printBillInvoice } from "@/lib/BillingPrint";
 import { DialogHeader,Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { countryCodes } from "./BillingForm";
 
 interface StockItem {
   id: number;
@@ -36,12 +37,13 @@ const BillingEdit = () => {
   const [showGSTPopup, setShowGSTPopup] = useState(false);
   const [stockList, setStockList] = useState<StockItem[]>([]);
   const [billItems, setBillItems] = useState<BillItem[]>([]);
-
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [selectedGSM, setSelectedGSM] = useState("");
   const [availableDescriptions, setAvailableDescriptions] = useState<StockItem[]>([]);
   const [selectedDescription, setSelectedDescription] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [price, setPrice] = useState<number | "">("");
+  const [countryCode, setCountryCode] = useState("+91");
 
   const subtotal = billItems.reduce(
     (sum, item) => sum + Number(item.total || 0),
@@ -68,6 +70,7 @@ const BillingEdit = () => {
       } else {
         setBillDate("");
       }
+      setPhoneNumber(bill.phone_number || "");
       setPaymentMode(bill.payment_mode || "");
       setStatus(bill.status || "");
     } catch (err) {
@@ -178,6 +181,7 @@ const BillingEdit = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           customer_name: customerName,
+          phone_number: phoneNumber,
           bill_date: billDate,
           payment_mode: paymentMode,
           status,
@@ -204,6 +208,7 @@ const BillingEdit = () => {
     printBillInvoice({
       billNumber: billNumber || "",
       customerName,
+      phoneNumber,        // Add this line
       billDate,
       paymentMode,
       items: billItems.map((it) => ({
@@ -237,6 +242,33 @@ const BillingEdit = () => {
         onChange={(e) => setCustomerName(e.target.value)}
         placeholder="Customer Name"
       />
+
+      <div className="flex gap-3 max-w-md">
+        {/* Country Code Dropdown */}
+        <select
+          value={countryCode}
+          onChange={(e) => setCountryCode(e.target.value)}
+          className="border p-2 rounded-xl w-32"
+        >
+          {countryCodes.map((c, idx) => (
+            <option key={idx} value={c.code}>
+              {c.code} ({c.country})
+            </option>
+          ))}
+        </select>
+
+        {/* Phone Number Input */}
+        <Input
+          placeholder="Phone Number"
+          value={phoneNumber}
+          maxLength={10}
+          onChange={(e) => {
+            const v = e.target.value.replace(/\D/g, ""); // allow digits only
+            if (v.length <= 10) setPhoneNumber(v);
+          }}
+          className="max-w-full"
+        />
+      </div>
 
       {/* Date */}
       <Input 

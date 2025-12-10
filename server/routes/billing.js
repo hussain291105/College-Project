@@ -21,12 +21,13 @@ router.get("/", async (req, res) => {
         MIN(id) AS id,
         CONCAT('INV-', LPAD(MIN(id), 4, '0')) AS bill_number,
         customer_name,
+        phone_number,
         bill_date,
         SUM(total) AS subtotal,
         payment_mode,
         status
       FROM billing
-      GROUP BY customer_name, bill_date, payment_mode, status
+      GROUP BY customer_name, phone_number, bill_date, payment_mode, status
       ORDER BY bill_date DESC
     `);
 
@@ -34,6 +35,36 @@ router.get("/", async (req, res) => {
   } catch (error) {
     console.error("Fetch billing error:", error);
     res.status(500).json({ error: "Failed to fetch bills" });
+  }
+});
+
+// ============================
+// GET PHONE NUMBER FOR CUSTOMER
+// ============================
+router.get("/phone/:name", async (req, res) => {
+  try {
+    const { name } = req.params;
+
+    const [rows] = await db.query(
+      `
+      SELECT phone_number
+      FROM billing
+      WHERE customer_name = ?
+      AND phone_number IS NOT NULL
+      AND phone_number <> ''
+      ORDER BY id DESC
+      LIMIT 1
+      `,
+      [name]
+    );
+
+    if (!rows.length) return res.json({ phone_number: "" });
+
+    res.json({ phone_number: rows[0].phone_number });
+
+  } catch (err) {
+    console.error("Get phone error:", err);
+    res.status(500).json({ error: "Failed to fetch phone number" });
   }
 });
 
@@ -50,6 +81,7 @@ router.get("/view/:id", async (req, res) => {
         MIN(id) as id,
         CONCAT('INV-', LPAD(MIN(id), 4, '0')) AS bill_number,
         customer_name,
+        phone_number,
         bill_date,
         payment_mode,
         status,
@@ -61,7 +93,7 @@ router.get("/view/:id", async (req, res) => {
       AND bill_date = (
         SELECT bill_date FROM billing WHERE id = ?
       )
-      GROUP BY customer_name, bill_date, payment_mode, status
+      GROUP BY customer_name, phone_number, bill_date, payment_mode, status
     `,
       [id, id]
     );
@@ -106,13 +138,14 @@ router.get("/:id", async (req, res) => {
       SELECT 
         CONCAT('INV-', LPAD(id, 4, '0')) AS bill_number,
         customer_name,
+        phone_number,
         bill_date,
         payment_mode,
         status,
         SUM(total) AS subtotal
       FROM billing
       WHERE id = ?
-      GROUP BY customer_name, bill_date, payment_mode, status, id
+      GROUP BY customer_name, phone_number, bill_date, payment_mode, status, id
     `,
       [id]
     );
@@ -163,7 +196,7 @@ router.post("/", async (req, res) => {
       await db.query("ALTER TABLE billing AUTO_INCREMENT = 1");
     }
 
-    const { customer_name, payment_mode, status, bill_date, items, subtotal } =
+    const { customer_name, phone_number, payment_mode, status, bill_date, items, subtotal } =
       req.body;
     let billId = null;
 
@@ -176,11 +209,12 @@ router.post("/", async (req, res) => {
       const [result] = await db.query(
         `
         INSERT INTO billing 
-          (customer_name, payment_mode, status, bill_date, gsm_number, description, quantity, price, total, subtotal)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          (customer_name, phone_number, payment_mode, status, bill_date, gsm_number, description, quantity, price, total, subtotal)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
         [
           customer_name,
+          phone_number,
           payment_mode,
           status,
           bill_date,
@@ -233,10 +267,10 @@ router.put("/:id", async (req, res) => {
     await db.query(
       `
       UPDATE billing 
-      SET customer_name=?, payment_mode=?, status=?, bill_date=?, subtotal=?
+      SET customer_name=?, phone_number=?, payment_mode=?, status=?, bill_date=?, subtotal=?
       WHERE id=?
     `,
-      [customer_name, payment_mode, status, bill_date, subtotal, id]
+      [customer_name, phone_number, payment_mode, status, bill_date, subtotal, id]
     );
 
     res.json({ success: true });

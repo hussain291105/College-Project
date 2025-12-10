@@ -20,6 +20,7 @@ interface Bill {
   id: number;
   bill_number?: string;
   customer_name?: string;
+  phone_number?:string;
   bill_date?: string;
   subtotal?: number;
   payment_mode?: string;
@@ -74,6 +75,7 @@ export default function BillingView() {
       items,
       billNumber: bill?.bill_number ?? `INV-${String(bill?.id ?? "").padStart(4, "0")}`,
       customerName: bill?.customer_name,
+      phoneNumber : bill?.phone_number,        // Add this line
       billDate: bill?.bill_date,
       paymentMode: bill?.payment_mode,
       subtotal: bill?.subtotal,
@@ -96,6 +98,7 @@ export default function BillingView() {
 
       <div className="mt-4">
         <p><strong>Customer:</strong> {bill?.customer_name ?? "—"}</p>
+        <p><strong>Phone:</strong> {bill?.phone_number ?? "—"}</p>
         <p><strong>Date:</strong> {formatDate(bill?.bill_date)}</p>
         <p><strong>Payment:</strong> {bill?.payment_mode ?? "—"}</p>
         <p><strong>Status:</strong> {bill?.status ?? "—"}</p>
