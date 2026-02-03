@@ -36,6 +36,22 @@ const AddPartDialog = ({ onPartAdded }: AddPartDialogProps) => {
     unit: "Packet",
   });
 
+  const resetForm = () => {
+    setFormData({
+      gsm_number: "",
+      category: "",
+      description: "",
+      manufacturer: "",
+      selling_price: "",
+      cost_price: "",
+      stock: "",
+      minimum_stock: "",
+      unit: "Packet",
+      kg: "",
+      amount: "",
+    });
+  };
+
   // Auto-calc cost price when KG + amount provided
   useEffect(() => {
     const kg = parseFloat(formData.kg);
@@ -67,25 +83,10 @@ const AddPartDialog = ({ onPartAdded }: AddPartDialogProps) => {
 
       await createStock(newStock);
 
-      toast.success("Stock added!");
-      setOpen(false);
-
-      // reset
-      setFormData({
-        gsm_number: "",
-        category: "",
-        description: "",
-        manufacturer: "",
-        stock: "",
-        minimum_stock: "", 
-        cost_price: "",
-        selling_price: "",
-        kg: "",
-        amount: "",
-        unit: "Packet",
-      });
-
+      toast.success("Stock item added successfully!");
       onPartAdded();
+      resetForm();
+      setOpen(false);
     } catch (error) {
       toast.error("Failed to add stock");
       console.error("CREATE STOCK ERROR:", error);
@@ -95,7 +96,15 @@ const AddPartDialog = ({ onPartAdded }: AddPartDialogProps) => {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          resetForm(); 
+        }
+        setOpen(isOpen);
+      }}
+    >
       <DialogTrigger asChild>
         <Button>
           <Plus className="mr-2 h-4 w-4" /> Add New Stock
