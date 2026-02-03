@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-
+import { toast } from "sonner";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AlertTriangle } from "lucide-react";
 
@@ -9,12 +9,18 @@ import AddPartDialog from "./AddPartDialog";
 
 import { SparePart } from "@/types/SparePart";
 import { getStock } from "@/api/stock";
+import LowStockDialog from "./LowStockDialog";
+import EditPartDialog from "./EditPartDialog";
+import { Toaster } from "./ui/toaster";
 
 const Dashboard = () => {
   const navigate = useNavigate();
 
   const [stock, setStock] = useState<SparePart[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showLowStock, setShowLowStock] = useState(false);
+  const [editPart, setEditPart] = useState<SparePart | null>(null);
+  const [reorderPart, setReorderPart] = useState<SparePart | null>(null);
 
   /* --------------------------------------------------------
      FETCH STOCK FROM MYSQL
@@ -34,6 +40,15 @@ const Dashboard = () => {
   useEffect(() => {
     loadStock();
   }, []);
+
+  const handleEditPart = (part: SparePart) => {
+    setEditPart(part);
+  };
+
+  const handleReorderPart = (part: SparePart) => {
+    setShowLowStock(false); 
+    setReorderPart(part);
+  };
 
   /* --------------------------------------------------------
      CALCULATIONS
@@ -112,34 +127,28 @@ const Dashboard = () => {
         </div>
 
         {/* Low Stock Alert */}
-        <Card className="cursor-pointer hover:shadow-lg transition rounded-lg">
-          <CardHeader className="flex items-center space-x-2">
-            <AlertTriangle className="text-yellow-500 w-5 h-5" />
-            <CardTitle>Low Stock</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{lowStockCount}</p>
-            <p className="text-muted-foreground">Items below threshold</p>
-          </CardContent>
-        </Card>
+        <div
+          onClick={() => {
+            if (lowStockCount > 0) {
+              setShowLowStock(true);
+            }
+          }}
+          className={lowStockCount === 0 ? "opacity-50 cursor-not-allowed" : ""}
+        >
+          <Card className="cursor-pointer hover:shadow-lg transition rounded-lg border hover:border-yellow-400">
+            <CardHeader className="flex items-center space-x-2">
+              <AlertTriangle className="text-yellow-500 w-5 h-5" />
+              <CardTitle>Low Stock</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold">{lowStockCount}</p>
+              <p className="text-muted-foreground">Items below threshold</p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Low Stock List */}
-      {lowStockCount > 0 && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-5">
-          <h2 className="text-lg font-semibold mb-3">
-            Items That Need Reordering
-          </h2>
-          <ul className="list-disc pl-5 text-gray-700">
-            {lowStockParts.map((p) => (
-              <li key={p.id}>
-                {p.category} — GSM {p.gsm_number}  
-                (Stock: {p.stock}, Min: {p.minimum_stock ?? 10})
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
 
       {/* Stock Table */}
       <div>
@@ -152,6 +161,61 @@ const Dashboard = () => {
           <PartsTable parts={stock} onUpdate={loadStock} />
         )}
       </div>
+
+      {/* Low Stock Dialog */}
+      <LowStockDialog
+        open={showLowStock}
+        onClose={() => setShowLowStock(false)}
+        lowStockParts={lowStockParts}
+        onEdit={handleEditPart}
+        onReorder={handleReorderPart}
+      />
+
+      {/* Edit Part Dialog */}
+      {editPart && (
+        <EditPartDialog
+          part={editPart}
+          open={!!editPart}
+          onOpenChange={(open) => {
+            if (!open) setEditPart(null);
+          }}
+          onPartUpdated={() => {
+            loadStock();
+            setEditPart(null);
+          }}
+        />
+      )}
+
+      {/* Reorder Part Dialog */}
+      {reorderPart && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-96">
+            <h2 className="text-xl font-semibold mb-4">Reorder Part</h2>
+
+            <p className="mb-4">
+              Reorder <strong>{reorderPart.category}</strong> (GSM {reorderPart.gsm_number})
+            </p>
+
+            <div className="flex justify-end gap-2">
+              <button
+                className="px-4 py-2 border rounded-md hover:bg-gray-100"
+                onClick={() => setReorderPart(null)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+                onClick={() => {
+                  toast.success("Reorder placed successfully!");
+                  setReorderPart(null);
+                }}
+              >
+                Confirm Reorder
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

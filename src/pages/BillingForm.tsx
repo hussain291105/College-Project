@@ -314,7 +314,8 @@ export default function BillingForm() {
   const [showGSTPopup, setShowGSTPopup] = useState(false);
   // ⭐ NEW: CUSTOMER NAME HISTORY
   const [customerNames, setCustomerNames] = useState<string[]>([]);
-
+  const [showCountryList, setShowCountryList] = useState(false);
+  const [countryHighlight, setCountryHighlight] = useState(-1);
   const [billDate, setBillDate] = useState(new Date().toISOString().slice(0, 10));
   const [paymentMode, setPaymentMode] = useState("");
   const [status, setStatus] = useState("Pending");
@@ -462,7 +463,7 @@ export default function BillingForm() {
 
     const payload = {
       customer_name: customerName,
-      phone_number: phoneNumber,
+      phone_number: `${countryCode} ${phoneNumber}`,
       payment_mode: paymentMode,
       status,
       bill_date: billDate,
@@ -620,17 +621,72 @@ export default function BillingForm() {
 
       <div className="flex gap-3 max-w-md">
         {/* Country Code Dropdown */}
-        <select
-          value={countryCode}
-          onChange={(e) => setCountryCode(e.target.value)}
-          className="border p-2 rounded-xl w-32"
-        >
-          {countryCodes.map((c, idx) => (
-            <option key={idx} value={c.code}>
-              {c.code} ({c.country})
-            </option>
-          ))}
-        </select>
+        <div className="relative w-32">
+          <input
+            value={countryCode}
+            readOnly
+            onFocus={() => {
+              setShowCountryList(true);
+              setCountryHighlight(-1);
+            }}
+            onClick={() => {
+              setShowCountryList(true);
+              setCountryHighlight(-1);
+            }}
+            className="border p-2 rounded-xl w-full bg-white cursor-pointer"
+            onKeyDown={(e) => {
+              if (!showCountryList) return;
+        
+              // Move Down
+              if (e.key === "ArrowDown") {
+                e.preventDefault();
+                setCountryHighlight((prev) =>
+                  prev < countryCodes.length - 1 ? prev + 1 : prev
+                );
+              }
+        
+              // Move Up
+              if (e.key === "ArrowUp") {
+                e.preventDefault();
+                setCountryHighlight((prev) => (prev > 0 ? prev - 1 : 0));
+              }
+        
+              // Select with Enter
+              if (e.key === "Enter") {
+                e.preventDefault();
+                if (countryHighlight >= 0) {
+                  setCountryCode(countryCodes[countryHighlight].code);
+                  setShowCountryList(false);
+                }
+              }
+        
+              // Close on Escape
+              if (e.key === "Escape") {
+                setShowCountryList(false);
+              }
+            }}
+          />
+        
+          {/* DROPDOWN LIST */}
+          {showCountryList && (
+            <div className="absolute mt-1 w-96 bg-white border rounded-lg shadow-lg max-h-80 overflow-y-auto z-20">
+              {countryCodes.map((c, idx) => (
+                <div
+                  key={idx}
+                  onMouseDown={() => {
+                    setCountryCode(c.code);
+                    setShowCountryList(false);
+                  }}
+                  className={`px-4 py-2 cursor-pointer select-none
+                    ${idx === countryHighlight ? "bg-blue-600 text-white" : "hover:bg-gray-100"}
+                  `}
+                >
+                  {c.code} ({c.country})
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Phone Number Input */}
         <Input

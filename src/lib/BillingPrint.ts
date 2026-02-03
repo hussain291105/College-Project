@@ -104,26 +104,26 @@ export function printBillInvoice(data: any) {
 
           .right-contact {
             text-align: right;
-            font-size: 14px;
+            font-size: 16px;
             text-align: right;
           }
 
           .right-contact-title {
             color: #0F4C3A;
             font-weight: bold;
-            font-size: 16px; 
+            font-size: 18px; 
           }
 
           .left-contact {
             text-align: left;
-            font-size: 14px;
+            font-size: 16px;
             text-align: left;
           }
 
           .left-contact-title {
             color: #0F4C3A;
             font-weight: bold;
-            font-size: 16px; 
+            font-size: 18px; 
           }
 
           table {
@@ -216,9 +216,20 @@ export function printBillInvoice(data: any) {
 
               <div class="right-contact">
                 <div class="right-contact-title">CUSTOMER CONTACT</div>
-                ${data.customerName}<br/>
-                ${new Date(data.billDate).toLocaleDateString("en-GB").replace(/\//g, "-")}<br/>
-                ${data.phoneNumber}
+                <p style="margin:2px 0;">
+                  <span style="color:#1D6B4F; font-weight:600;">Name :</span>
+                  <span style="margin-left:5px;">${data.customerName}</span>
+                </p>
+                <p style="margin:2px 0;">
+                  <span style="color:#1D6B4F; font-weight:600;">Date :</span>
+                  <span style="margin-left:5px;">
+                    ${new Date(data.billDate).toLocaleDateString("en-GB").replace(/\//g, "-")}
+                  </span>
+                </p>
+                <p style="margin:2px 0;">
+                  <span style="color:#1D6B4F; font-weight:600;">Phone :</span>
+                  <span style="margin-left:5px;">${data.phoneNumber}</span>
+                </p>
               </div>
 
               ${
@@ -300,7 +311,6 @@ export function printBillInvoice(data: any) {
               ${showPaidStamp ? `
               <div style="
                 width: 100%;
-                margin-top: 40px;
                 display: flex;
                 justify-content: right;
                 align-items: center;
@@ -309,7 +319,7 @@ export function printBillInvoice(data: any) {
                   <img 
                     src="/paid-stamp copy.png" 
                     alt="Paid Stamp"
-                    style="width: 220px; position: relative; z-index: 1;"
+                    style="width: 120px; position: relative; z-index: 1;"
                   />
 
                   <img
@@ -317,9 +327,9 @@ export function printBillInvoice(data: any) {
                     alt="Signature"
                     style="
                       position: absolute;
-                      bottom: -10px;
-                      right: -60px;
-                      width: 180px;
+                      bottom: 10px;
+                      right: 20px;
+                      width: 100px;
                       z-index: 2;
                       transform: rotate(-8deg);
                     "

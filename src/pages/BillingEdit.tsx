@@ -70,7 +70,11 @@ const BillingEdit = () => {
       } else {
         setBillDate("");
       }
-      setPhoneNumber(bill.phone_number || "");
+      setPhoneNumber(
+        bill.phone_number
+          ? "+91 " + bill.phone_number.replace(/\D/g, "").slice(-10)
+          : "+91 "
+      );
       setPaymentMode(bill.payment_mode || "");
       setStatus(bill.status || "");
     } catch (err) {
@@ -205,7 +209,7 @@ const BillingEdit = () => {
   };
 
   const handlePrint = (withGST: boolean) => {
-    printBillInvoice({
+    const data = {
       billNumber: billNumber || "",
       customerName,
       phoneNumber,        // Add this line
@@ -221,7 +225,7 @@ const BillingEdit = () => {
       subtotal: Number(subtotal),
       status,
       gst: withGST, // Send GST flag
-    });
+    };
   };
 
   return (
@@ -243,32 +247,17 @@ const BillingEdit = () => {
         placeholder="Customer Name"
       />
 
-      <div className="flex gap-3 max-w-md">
-        {/* Country Code Dropdown */}
-        <select
-          value={countryCode}
-          onChange={(e) => setCountryCode(e.target.value)}
-          className="border p-2 rounded-xl w-32"
-        >
-          {countryCodes.map((c, idx) => (
-            <option key={idx} value={c.code}>
-              {c.code} ({c.country})
-            </option>
-          ))}
-        </select>
-
-        {/* Phone Number Input */}
-        <Input
-          placeholder="Phone Number"
-          value={phoneNumber}
-          maxLength={10}
-          onChange={(e) => {
-            const v = e.target.value.replace(/\D/g, ""); // allow digits only
-            if (v.length <= 10) setPhoneNumber(v);
-          }}
-          className="max-w-full"
-        />
-      </div>
+      {/* Phone Number Input */}
+      <Input
+        placeholder="Phone Number"
+        value={phoneNumber}
+        maxLength={10}
+        onChange={(e) => {
+          const v = e.target.value.replace(/\D/g, ""); // allow digits only
+          if (v.length <= 10) setPhoneNumber(v);
+        }}
+        className="max-w-full"
+      />
 
       {/* Date */}
       <Input 

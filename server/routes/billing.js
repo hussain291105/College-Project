@@ -261,16 +261,20 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { customer_name, payment_mode, status, bill_date, subtotal } =
+    const { customer_name, phone_number, payment_mode, status, bill_date, subtotal } =
       req.body;
+
+    let cleanPhone = (phone_number || "")
+      .replace(/\s+/g, '')   // remove spaces
+      .replace(/(\+91)+/, '+91');  // avoid repeated +91
 
     await db.query(
       `
       UPDATE billing 
       SET customer_name=?, phone_number=?, payment_mode=?, status=?, bill_date=?, subtotal=?
-      WHERE id=?
+      WHERE CONCAT('INV-', LPAD(id, 4, '0')) = ?
     `,
-      [customer_name, phone_number, payment_mode, status, bill_date, subtotal, id]
+      [customer_name, phone_number, payment_mode, status, bill_date, subtotal, `INV-${String(id).padStart(4,'0')}`]
     );
 
     res.json({ success: true });

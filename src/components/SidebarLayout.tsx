@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import { Menu } from "lucide-react";
+import EzzyLogo from "@/assets/logo.png";
 
 const SidebarLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -19,7 +20,7 @@ const SidebarLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         <div className="flex items-center justify-between p-4 border-b">
           <div className="flex items-center gap-3">
             <img
-            src="/ezzylogo.png"
+            src={EzzyLogo}
             alt="Ezzy Auto Parts"
             className="h-8 w-8 object-contain"
           />

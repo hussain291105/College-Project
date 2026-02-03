@@ -21,7 +21,7 @@ interface AddPartDialogProps {
 const AddPartDialog = ({ onPartAdded }: AddPartDialogProps) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  
   const [formData, setFormData] = useState({
     gsm_number: "",
     category: "",

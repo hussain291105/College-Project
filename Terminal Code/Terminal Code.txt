@@ -1,0 +1,6 @@
+Backend Code :-
+    npm run server 
+Frontend Code :-
+    npm run electron
+Transfer changes to Application :-
+    npm run build
